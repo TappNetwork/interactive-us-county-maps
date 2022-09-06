@@ -16,29 +16,29 @@ var width = 580,
   },
 
 // Data variables
-  dataPath = 'data/rpp-2018-county.csv',
+  dataPath = 'data/median-property-tax-2020-21.csv',
   legendDataType = dataFormat.dollars,
   tooltipDataType = dataFormat.dollarsAndCents,
-  countyId = 'county',
+  countyId = 'id',
   countyName = 'name',
   stateID = '',
   stateName = '',
-  observation = 'value',
+  observation = 'data',
   rangeTruncated = true,
   divergent = true,
 
 // Define increments for data scale
-  min = 75, //Floor for the first step
-  max = 125, //Anything above the max is the final step
-  steps = 11, //Final step represents anything at or above max
+  min = 200, //Floor for the first step
+  max = 4000, //Anything above the max is the final step
+  steps = 9, //Final step represents anything at or above max
   increment = (max - min) / (steps - 1),
 
 // Color variables
   borderColor = '#fff', //Color of borders between states
   noDataColor = '#ddd', //Color applied when no data matches an element
-  lowBaseColor = '#d73027', //Color applied at the end of the scale with the lowest values
-  midBaseColor = '#ffffbf';
-  highBaseColor = '#4575b4';
+  lowBaseColor = '#EDF8B1', //Color applied at the end of the scale with the lowest values
+  midBaseColor = '#60E686';
+  highBaseColor = '#2C7FB8';
 
 var sequentialDomain = [0, steps - 1];
 var divergentDomain = [0, (steps - 1)/2, steps - 1];
@@ -120,11 +120,25 @@ var adjustment = d3.scale.linear()
         .range([0, 150]);
 
 function addTooltip(label, number) {
+  switch(number) {
+    case false:
+      number = 'No Data';
+      break;
+    case 200:
+      number = 'Less Than $200';
+      break;
+    case 10000:
+      number = 'Greater Than $10,000';
+      break;
+    default:
+      number = tooltipDataType(number);
+  } 
+
   tooltip.transition()
   .duration(200)
   .style('opacity', 0.9);
   tooltip.html(
-  label + ': ' + (typeof(+number) === 'number' ? tooltipDataType(number) : 'No Data')
+  label + ': ' + number/*(number ? tooltipDataType(number) : 'No Data')*/
   )
   .style('left', (d3.event.pageX - adjustment(d3.event.pageX)) + 'px')
   .style('top', (d3.event.pageY + 50) + 'px');
